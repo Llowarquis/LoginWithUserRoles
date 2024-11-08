@@ -11,7 +11,7 @@
 			@*Img y texto bienvenida*@
 			<div class="mb-3 text-center flex-column">
 				<img src="/images/usuario.png" style="max-height:5rem;" />
-				<h3>Inicio de Sesi&oacute;n</h3>
+				<h3><b>Inicio de Sesi&oacute;n</b></h3>
 			</div>
 
 			@*Campo Username*@
@@ -23,7 +23,7 @@
 
 			@*Campo Contrasena*@
 			<div class="mb-3">
-				<label>Password</label>
+				<label>Contraseña</label>
 				<InputText @bind-Value="Model.Password" placeholder="Contraseña" type="password" class="form-control" />
 				<ValidationMessage For="() => Model.Password" />
 			</div>
