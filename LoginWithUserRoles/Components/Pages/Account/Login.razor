@@ -1,0 +1,78 @@
+﻿@page "/Login"
+
+@inject Contexto contexto
+@inject NavigationManager navigationManager
+
+<PageTitle>Iniciar Sesi&oacute;n</PageTitle>
+<div class="row">
+	<div class="col-lg-4 offset-lg-4 pt-4 pb-4 border shadow-lg">
+		<EditForm Model="@Model" OnValidSubmit="Authenticate" FormName="LoginForm">
+			<DataAnnotationsValidator />
+			@*Img y texto bienvenida*@
+			<div class="mb-3 text-center flex-column">
+				<img src="/images/usuario.png" style="max-height:5rem;" />
+				<h3>Inicio de Sesi&oacute;n</h3>
+			</div>
+
+			@*Campo Username*@
+			<div class="mb-3">
+				<label>Username</label>
+				<InputText @bind-Value="Model.Username" class="form-control" placeholder="Username" />
+				<ValidationMessage For="() => Model.Username" />
+			</div>
+
+			@*Campo Contrasena*@
+			<div class="mb-3">
+				<label>Password</label>
+				<InputText @bind-Value="Model.Password" placeholder="Contraseña" type="password" class="form-control" />
+				<ValidationMessage For="() => Model.Password" />
+			</div>
+
+			@if (!string.IsNullOrEmpty(Mensaje))
+			{
+				<div class="alert alert-danger" role="alert">
+					@Mensaje
+				</div>
+			}
+
+			<div class="mb-2 d-grid gap-2">
+				<button type="submit" class="btn btn-primary">Login</button>
+			</div>
+		</EditForm>
+	</div>
+</div>
+
+
+@code {
+	[CascadingParameter]
+	public HttpContext? HttpContext { get; set; }
+
+	[SupplyParameterFromForm]
+	public LoginViewModel Model { get; set; } = new();
+
+	public string Mensaje { get; set; } = string.Empty;
+
+
+	private async Task Authenticate()
+	{
+		Mensaje = string.Empty;
+		var cuentaValidada = contexto.Usuarios.Where(user => user.Username == Model.Username).FirstOrDefault();
+		if (cuentaValidada == null || cuentaValidada.Password != Model.Password)
+		{
+			Mensaje = "Las credenciales proporcionadas son incorrectas.";
+			return;
+		}
+
+		var claims = new List<Claim>
+		{
+			new Claim(ClaimTypes.Name, Model.Username),
+			new Claim(ClaimTypes.Role, cuentaValidada.Rol)
+		};
+
+		HttpContext httpContext;
+		var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+		var principal = new ClaimsPrincipal(identity);
+		await HttpContext.SignInAsync(principal);
+		navigationManager.NavigateTo("/");
+	}
+}
