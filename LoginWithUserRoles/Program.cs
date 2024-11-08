@@ -1,5 +1,7 @@
 using LoginWithUserRoles.Components;
+using LoginWithUserRoles.Context;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
 	.AddInteractiveServerComponents();
 
+// Adding authentication service
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
 	.AddCookie(o =>
 	{
@@ -18,6 +21,12 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddAuthentication();
 builder.Services.AddCascadingAuthenticationState();
 
+// Getting DbConnection
+var DbConnection = builder.Configuration.GetConnectionString("DbConnection");
+
+// Injecting ConnectionString
+builder.Services.AddDbContext<Contexto>(o =>
+	o.UseSqlServer(DbConnection));
 
 var app = builder.Build();
 
@@ -33,6 +42,8 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
+
+// Middlewares
 app.UseAuthentication();
 app.UseAuthorization();
 
