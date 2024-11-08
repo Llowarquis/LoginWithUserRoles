@@ -2,6 +2,30 @@
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
+<div class="row">
+	<div class="col-12">
+		<h2 class="fw-bolder">Saludos ministro, bienvenido a <span class="text-danger">La tarea 10.</span></h2>
+	</div>
+	<div class="col-12">
+		<div class="card">
+			<div class="card-body">
+				<AuthorizeView>
+					<NotAuthorized>
+						<span>Debes iniciar sesi&oacute;n. Por favor, <a class="fw-bolder" href="/login">Haz click aqu&iacute;</a> para iniciar sesi&oacute;n.</span>
+					</NotAuthorized>
+					<Authorized>
+						@if (@context.User.Identity?.Name == "Admin")
+						{
+							<img src="/images/admin-logged.png" style="max-height:5rem;" alt="Imagen no disponible..." />
+						}
+						else
+						{
+							<img src="/images/user-logged.png" style="max-height:5rem;" alt="Imagen no disponible..." />
+						}
+						<span>Se inici&oacute; como <b>@context.User.Identity?.Name</b>, <a class="fw-bolder" href="/logout">Click aqu&iacute;</a> para cerrar sesi&oacute;n.</span>
+					</Authorized>
+				</AuthorizeView>
+			</div>
+		</div>
+	</div>
+</div>
